@@ -43,21 +43,31 @@ pcall(function()
 
     local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 420), ScrollBarThickness = 5, BorderSizePixel = 0})
 
-    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 310, 0, 55), Position = UDim2.new(0.5, -155, 0.82, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
+    -- قائمة التحديثات مع صورة حساب clanzenontop وكلمة المطور الملونة
+    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 320, 0, 65), Position = UDim2.new(0.5, -160, 0.80, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
     mk("UICorner", NotifFrame, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1.5})
 
-    local DevAvatar = mk("ImageLabel", NotifFrame, {Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 8, 0, 8), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
+    local DevAvatar = mk("ImageLabel", NotifFrame, {Size = UDim2.new(0, 46, 0, 46), Position = UDim2.new(0, 10, 0, 9), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
     mk("UICorner", DevAvatar, {CornerRadius = UDim.new(1, 0)})
     mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1})
 
     pcall(function()
-        local content, isReady = Plrs:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+        -- جلب صورة حساب clanzenontop الأساسية أو اللاعب الحالي
+        local targetUserId = LP.UserId
+        pcall(function()
+            targetUserId = Plrs:GetUserIdFromNameAsync("clanzenontop")
+        end)
+        local content, isReady = Plrs:GetUserThumbnailAsync(targetUserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
         if isReady then DevAvatar.Image = content end
     end)
 
-    mkLbl(NotifFrame, UDim2.new(1, -55, 0, 16), UDim2.new(0, 54, 0, 6), "Clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    local NotifText = mkLbl(NotifFrame, UDim2.new(1, -55, 0, 24), UDim2.new(0, 54, 0, 24), "", 9, Color3.fromRGB(255, 100, 100), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+    mkLbl(NotifFrame, UDim2.new(1, -65, 0, 16), UDim2.new(0, 64, 0, 6), "Clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    
+    -- كلمة المطور بجانب الاسم ملونة
+    local notifDevLabel = mkLbl(NotifFrame, UDim2.new(1, -135, 0, 16), UDim2.new(0, 140, 0, 6), "(المطور)", 9, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+
+    local NotifText = mkLbl(NotifFrame, UDim2.new(1, -65, 0, 28), UDim2.new(0, 64, 0, 24), "", 9, Color3.fromRGB(255, 120, 120), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
     local function showNotification(txt)
         NotifText.Text = txt
@@ -70,16 +80,6 @@ pcall(function()
     task.spawn(function()
         task.wait(0.5)
         showNotification("تم تحديث سكربت zen hub\n- صيانة قلتش خيار اوتو اسست")
-    end)
-
-    -- تأثير الرينبو لكلمة المطور
-    task.spawn(function()
-        while true do
-            local hue = tick() % 5 / 5
-            local rainbowColor = Color3.fromHSV(hue, 1, 1)
-            -- ملاحظة: اللون المتغير يطبق جمالية على السكربت والواجهة
-            RS.RenderStepped:Wait()
-        end
     end)
 
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
@@ -238,6 +238,7 @@ pcall(function()
                 end
             end
 
+            -- تحسين سلاسة اختيار العدو وتبديله بسرعة وبدون تعليق في خيار الأسست
             if assistEnabled and HB(c) then
                 local tp, md = nil, math.huge
                 for _, p in pairs(Plrs:GetPlayers()) do
@@ -246,9 +247,9 @@ pcall(function()
                         if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
                     end
                 end
-                if tp and md <= 9.5 then
+                if tp and md <= 15 then
                     local cam = workspace.CurrentCamera
-                    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, Vector3.new(tp.X, hrp.Position.Y, tp.Z)), 0.3)
+                    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, Vector3.new(tp.X, hrp.Position.Y, tp.Z)), 0.45)
                 end
             end
 
@@ -292,10 +293,11 @@ pcall(function()
         end)
     end)
 
-    -- تحديث ألوان الرينبو بداخل الواجهة باستمرار
+    -- تحديث ألوان رينبو متحركة وناعمة لكل من واجهة المطور ونصوص القائمة
     RS.Heartbeat:Connect(function()
         local hue = (tick() % 3) / 3
         local rainbowCol = Color3.fromHSV(hue, 1, 1)
         devNameLabel.TextColor3 = rainbowCol
+        notifDevLabel.TextColor3 = rainbowCol
     end)
 end)
