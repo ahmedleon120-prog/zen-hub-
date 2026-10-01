@@ -75,7 +75,7 @@ pcall(function()
 
     task.spawn(function()
         task.wait(1)
-        showNotification("تم تحديث سكربت zen hub\n- دعم فحص السواتر والجدران الواطية", Color3.fromRGB(255, 60, 60), 6)
+        showNotification("تم تحديث سكربت zen hub\n- إزالة فحص الجدران بالكامل", Color3.fromRGB(255, 60, 60), 6)
     end)
 
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
@@ -192,23 +192,6 @@ pcall(function()
     for _, p in pairs(Plrs:GetPlayers()) do setupPlayerTracking(p) end
     Plrs.PlayerAdded:Connect(setupPlayerTracking)
 
-    local function isWallBetween(pos1, pos2)
-        local rayParams = RaycastParams.new()
-        rayParams.FilterType = RaycastParams.FilterType.Exclude
-        rayParams.FilterDescendantsInstances = {LP.Character}
-        local result = workspace:Raycast(pos1, (pos2 - pos1), rayParams)
-        if result and result.Instance then
-            local hitPart = result.Instance
-            if hitPart.Size.Y < 3.5 then
-                return false
-            end
-            if not hitPart:IsDescendantOf(Plrs:GetPlayerFromCharacter(hitPart.Parent) and hitPart.Parent or workspace) then
-                return true
-            end
-        end
-        return false
-    end
-
     local function isValidEnemy(eHrp, eP)
         if eP == LP or (LP.Team and eP.Team and LP.Team == eP.Team) or eHrp.Position.X < 20 then return false end
         local eHum = eP.Character and eP.Character:FindFirstChildOfClass("Humanoid")
@@ -256,7 +239,7 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                        if d < md then 
                             md, tp = d, p.Character.HumanoidRootPart.Position 
                         end
                     end
@@ -272,7 +255,7 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                        if d < md then 
                             md, tp = d, p.Character.HumanoidRootPart.Position 
                         end
                     end
@@ -291,7 +274,7 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                        if d < md then 
                             md, tp, cE = d, p.Character.HumanoidRootPart.Position, p.Character.HumanoidRootPart 
                         end
                     end
