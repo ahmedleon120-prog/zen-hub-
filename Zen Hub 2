@@ -31,20 +31,20 @@ pcall(function()
     mk("UICorner", B, {CornerRadius = UDim.new(1, 0)})
     mk("UIStroke", B, {Color = Color3.fromRGB(0, 255, 140), Thickness = 2})
 
-    local N = mk("Frame", G, {Size = UDim2.new(0, 240, 0, 280), Position = UDim2.new(0.05, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Visible = false, Active = true, Draggable = true})
+    local N = mk("Frame", G, {Size = UDim2.new(0, 240, 0, 315), Position = UDim2.new(0.05, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Visible = false, Active = true, Draggable = true})
     mk("UICorner", N, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", N, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
 
     local TopBar = mk("Frame", N, {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = Color3.fromRGB(16, 22, 33)})
     mk("UICorner", TopBar, {CornerRadius = UDim.new(0, 10)})
-    mkLbl(TopBar, UDim2.new(1, -20, 0, 16), UDim2.new(0, 10, 0, 4), "Zen Hub | Official", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(TopBar, UDim2.new(1, -20, 0, 16), UDim2.new(0, 10, 0, 4), "Zen Hub (ابو الزين)", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     
-    local devNameLabel = mkLbl(TopBar, UDim2.new(1, -20, 0, 12), UDim2.new(0, 10, 0, 22), "By: Clanzenontop (المطور)", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+    local devNameLabel = mkLbl(TopBar, UDim2.new(1, -20, 0, 12), UDim2.new(0, 10, 0, 22), "By: clanzenontop (مطور)", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
-    local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 420), ScrollBarThickness = 5, BorderSizePixel = 0})
+    local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 460), ScrollBarThickness = 5, BorderSizePixel = 0})
 
-    -- قائمة التحديثات مع صورة حساب clanzenontop وكلمة المطور الملونة
-    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 320, 0, 65), Position = UDim2.new(0.5, -160, 0.80, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
+    -- الإشعارات والرسائل الحمراء السفلية مع صورة الحساب وكلمة مطور الملونة
+    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 330, 0, 65), Position = UDim2.new(0.5, -165, 0.80, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
     mk("UICorner", NotifFrame, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1.5})
 
@@ -53,7 +53,6 @@ pcall(function()
     mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1})
 
     pcall(function()
-        -- جلب صورة حساب clanzenontop الأساسية أو اللاعب الحالي
         local targetUserId = LP.UserId
         pcall(function()
             targetUserId = Plrs:GetUserIdFromNameAsync("clanzenontop")
@@ -62,11 +61,9 @@ pcall(function()
         if isReady then DevAvatar.Image = content end
     end)
 
-    mkLbl(NotifFrame, UDim2.new(1, -65, 0, 16), UDim2.new(0, 64, 0, 6), "Clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(NotifFrame, UDim2.new(1, -65, 0, 16), UDim2.new(0, 64, 0, 6), "clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     
-    -- كلمة المطور بجانب الاسم ملونة
-    local notifDevLabel = mkLbl(NotifFrame, UDim2.new(1, -135, 0, 16), UDim2.new(0, 140, 0, 6), "(المطور)", 9, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-
+    local notifDevLabel = mkLbl(NotifFrame, UDim2.new(1, -135, 0, 16), UDim2.new(0, 135, 0, 6), "(مطور)", 9, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     local NotifText = mkLbl(NotifFrame, UDim2.new(1, -65, 0, 28), UDim2.new(0, 64, 0, 24), "", 9, Color3.fromRGB(255, 120, 120), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
     local function showNotification(txt)
@@ -79,13 +76,14 @@ pcall(function()
 
     task.spawn(function()
         task.wait(0.5)
-        showNotification("تم تحديث سكربت zen hub\n- صيانة قلتش خيار اوتو اسست")
+        showNotification("تم تحديث Zen Hub (ابو الزين)\n- صيانة خيار اوتو اسست وتحسين الأداء")
     end)
 
+    -- نافذة الشروحات
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
     mk("UICorner", SecurityPanel, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", SecurityPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
-    mkLbl(SecurityPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 10, 0, 6), "شرح الحماية (Clanzenontop)", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(SecurityPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 10, 0, 6), "الشروحات (clanzenontop)", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
 
     local HideSecBtn = mk("TextButton", SecurityPanel, {Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -26, 0, 8), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Text = "X", TextColor3 = Color3.fromRGB(240, 245, 255), TextSize = 11, Font = Enum.Font.GothamBold})
     mk("UICorner", HideSecBtn, {CornerRadius = UDim.new(1, 0)})
@@ -105,6 +103,23 @@ pcall(function()
     addSecLine("• من 40% الى 30% :", "يعتبر غير امن وبنسه كبيره تتبند", "")
     addSecLine("• من 29% الى 1% :", "خطر خطر عاد انسى انت تتبند تتبد", "")
 
+    -- نافذة التحديثات الجديدة المرتبة (بألوان مختلفة لكل سطر)
+    local UpdatesPanel = mk("Frame", G, {Size = UDim2.new(0, 310, 0, 250), Position = UDim2.new(0.35, 0, 0.3, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
+    mk("UICorner", UpdatesPanel, {CornerRadius = UDim.new(0, 10)})
+    mk("UIStroke", UpdatesPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
+    mkLbl(UpdatesPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 12, 0, 8), "قائمة التحديثات والإضافات", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+
+    local HideUpdBtn = mk("TextButton", UpdatesPanel, {Size = UDim2.new(0, 22, 0, 22), Position = UDim2.new(1, -28, 0, 8), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Text = "X", TextColor3 = Color3.fromRGB(240, 245, 255), TextSize = 11, Font = Enum.Font.GothamBold})
+    mk("UICorner", HideUpdBtn, {CornerRadius = UDim.new(1, 0)})
+    HideUpdBtn.MouseButton1Click:Connect(function() UpdatesPanel.Visible = false end)
+
+    local updLinesContainer = mk("Frame", UpdatesPanel, {Size = UDim2.new(1, -20, 1, -45), Position = UDim2.new(0, 10, 0, 38), BackgroundTransparency = 1})
+    
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 0), "• اضافة خيار التحديثات", 11, Color3.fromRGB(0, 255, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 32), "• اضافة خيار الاوتو اسست", 11, Color3.fromRGB(255, 200, 0), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 64), "• تعديل بالردود التشجيعية وتحسينها", 11, Color3.fromRGB(255, 100, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 110), "انتظرو كل جديد ❤️", 13, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Center, Enum.Font.GothamBold)
+
     local AutoPanel = mk("Frame", G, {Size = UDim2.new(0, 240, 0, 140), Position = UDim2.new(0.5, -120, 0.2, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.05, Active = true, Draggable = true, Visible = false})
     mk("UICorner", AutoPanel, {CornerRadius = UDim.new(0, 12)})
     mk("UIStroke", AutoPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
@@ -121,7 +136,7 @@ pcall(function()
     local InnerBox = mk("Frame", AutoPanel, {Size = UDim2.new(0.88, 0, 0, 28), Position = UDim2.new(0.06, 0, 0, 65), BackgroundColor3 = Color3.fromRGB(16, 22, 33), BackgroundTransparency = 0.2})
     mk("UICorner", InnerBox, {CornerRadius = UDim.new(0, 6)})
     local T = mkLbl(InnerBox, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), "", 9, Color3.fromRGB(230, 235, 245), Enum.TextXAlignment.Center, Enum.Font.GothamMedium)
-    local APFooter = mkLbl(AutoPanel, UDim2.new(1, 0, 0, 16), UDim2.new(0, 0, 0, 102), "By Clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Center, Enum.Font.Gotham)
+    local APFooter = mkLbl(AutoPanel, UDim2.new(1, 0, 0, 16), UDim2.new(0, 0, 0, 102), "By clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Center, Enum.Font.Gotham)
 
     local panelVisible = true
     HideAPBtn.MouseButton1Click:Connect(function()
@@ -167,11 +182,16 @@ pcall(function()
     mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 255), "الاعدادات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     O(274, "الردود التشجيعية", 100, function(s) messagesEnabled = s end, true)
 
-    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 312), "الحماية", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 312), "الشروحات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     local SecBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 331), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
     mk("UICorner", SecBtn, {CornerRadius = UDim.new(0, 6)})
-    mkLbl(SecBtn, UDim2.new(1, -10, 1, 0), UDim2.new(0.08, 0, 0, 0), "شرح الحماية", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(SecBtn, UDim2.new(1, -10, 1, 0), UDim2.new(0.08, 0, 0, 0), "شرح الأمان", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     SecBtn.MouseButton1Click:Connect(function() SecurityPanel.Visible = not SecurityPanel.Visible end)
+
+    local UpdMenuBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 368), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
+    mk("UICorner", UpdMenuBtn, {CornerRadius = UDim.new(0, 6)})
+    mkLbl(UpdMenuBtn, UDim2.new(1, -10, 1, 0), UDim2.new(0.08, 0, 0, 0), "التحديثات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    UpdMenuBtn.MouseButton1Click:Connect(function() UpdatesPanel.Visible = not UpdatesPanel.Visible end)
 
     local deathCount = 0
     local loseMsgs = {"ليه صاير نوب💔", "شد اللعب شويه", "حظ اوفر للمره الجايه🥀"}
@@ -197,7 +217,9 @@ pcall(function()
     Plrs.PlayerAdded:Connect(setupPlayerTracking)
 
     local function isValidEnemy(eHrp, eP)
-        if eP == LP or (LP.Team and eP.Team and LP.Team == eP.Team) or eHrp.Position.X < 20 then return false end
+        if eP == LP then return false end
+        if LP.Team and eP.Team and LP.Team == eP.Team then return false end
+        if eHrp.Position.X < 20 then return false end
         local eHum = eP.Character and eP.Character:FindFirstChildOfClass("Humanoid")
         if not eHum or eHum.Health <= 0 then return false end
         return true
@@ -238,7 +260,6 @@ pcall(function()
                 end
             end
 
-            -- تحسين سلاسة اختيار العدو وتبديله بسرعة وبدون تعليق في خيار الأسست
             if assistEnabled and HB(c) then
                 local tp, md = nil, math.huge
                 for _, p in pairs(Plrs:GetPlayers()) do
@@ -247,9 +268,10 @@ pcall(function()
                         if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
                     end
                 end
-                if tp and md <= 15 then
+                if tp and md <= 18 then
                     local cam = workspace.CurrentCamera
-                    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, Vector3.new(tp.X, hrp.Position.Y, tp.Z)), 0.45)
+                    local targetCF = CFrame.new(cam.CFrame.Position, Vector3.new(tp.X, hrp.Position.Y, tp.Z))
+                    cam.CFrame = cam.CFrame:Lerp(targetCF, 0.2)
                 end
             end
 
@@ -293,7 +315,6 @@ pcall(function()
         end)
     end)
 
-    -- تحديث ألوان رينبو متحركة وناعمة لكل من واجهة المطور ونصوص القائمة
     RS.Heartbeat:Connect(function()
         local hue = (tick() % 3) / 3
         local rainbowCol = Color3.fromHSV(hue, 1, 1)
