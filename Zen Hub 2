@@ -50,8 +50,11 @@ pcall(function()
     mk("UICorner", DevAvatar, {CornerRadius = UDim.new(1, 0)})
     mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1})
 
+    -- جلب صورة بروفايل المطور clanzenontop أو اللاعب الأساسي
     pcall(function()
-        local content, isReady = Plrs:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+        local success, userId = pcall(function() return Plrs:GetUserIdFromNameAsync("clanzenontop") end)
+        if not success or not userId then userId = LP.UserId end
+        local content, isReady = Plrs:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
         if isReady then DevAvatar.Image = content end
     end)
 
@@ -176,7 +179,7 @@ pcall(function()
             local hum = char:WaitForChild("Humanoid", 5)
             if hum then
                 hum.Died:Connect(function()
-                    if player == LP then
+                    if player == LP and messagesEnabled then
                         deathCount = deathCount + 1
                         if deathCount >= 2 then
                             deathCount = 0
