@@ -192,7 +192,6 @@ pcall(function()
     for _, p in pairs(Plrs:GetPlayers()) do setupPlayerTracking(p) end
     Plrs.PlayerAdded:Connect(setupPlayerTracking)
 
-    -- فحص ذكي: يسمح بتجاوز السواتر والجدران الواطية (مثل نظام الكلاسيك)
     local function isWallBetween(pos1, pos2)
         local rayParams = RaycastParams.new()
         rayParams.FilterType = RaycastParams.FilterType.Exclude
@@ -200,7 +199,6 @@ pcall(function()
         local result = workspace:Raycast(pos1, (pos2 - pos1), rayParams)
         if result and result.Instance then
             local hitPart = result.Instance
-            -- إذا كان العائق جداراً واطئاً أو ساتراً قصيراً (ارتفاعه أقل من 3.5 وحدة)، نسمح بالاستهداف عادي
             if hitPart.Size.Y < 3.5 then
                 return false
             end
