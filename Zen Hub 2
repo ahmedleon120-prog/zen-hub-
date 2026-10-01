@@ -42,30 +42,40 @@ pcall(function()
 
     local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 420), ScrollBarThickness = 5, BorderSizePixel = 0})
 
-    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 310, 0, 55), Position = UDim2.new(0.5, -155, 0.82, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
+    local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 330, 0, 55), Position = UDim2.new(0.5, -165, 0.82, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
     mk("UICorner", NotifFrame, {CornerRadius = UDim.new(0, 10)})
-    mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
+    mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1.5})
 
     local DevAvatar = mk("ImageLabel", NotifFrame, {Size = UDim2.new(0, 38, 0, 38), Position = UDim2.new(0, 8, 0, 8), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
     mk("UICorner", DevAvatar, {CornerRadius = UDim.new(1, 0)})
-    mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1})
+    mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1})
 
     pcall(function()
         local content, isReady = Plrs:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
         if isReady then DevAvatar.Image = content end
     end)
 
-    mkLbl(NotifFrame, UDim2.new(1, -55, 0, 16), UDim2.new(0, 54, 0, 6), "clanzenontop", 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    local NotifText = mkLbl(NotifFrame, UDim2.new(1, -55, 0, 24), UDim2.new(0, 54, 0, 24), "", 9, Color3.fromRGB(220, 230, 245), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+    mkLbl(NotifFrame, UDim2.new(1, -55, 0, 16), UDim2.new(0, 54, 0, 6), "clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    local NotifText = mkLbl(NotifFrame, UDim2.new(1, -55, 0, 30), UDim2.new(0, 54, 0, 22), "", 8, Color3.fromRGB(255, 100, 100), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
 
-    local function showNotification(txt)
-        if not messagesEnabled then return end
+    local function showNotification(txt, customColor, duration)
         NotifText.Text = txt
+        if customColor then
+            NotifText.TextColor3 = customColor
+        else
+            NotifText.TextColor3 = Color3.fromRGB(220, 230, 245)
+        end
         NotifFrame.Visible = true
-        task.delay(4, function()
+        task.delay(duration or 4, function()
             if NotifText.Text == txt then NotifFrame.Visible = false end
         end)
     end
+
+    -- إشعار التحديث عند التشغيل لمدة 6 ثوانٍ بلون أحمر
+    task.spawn(function()
+        task.wait(1)
+        showNotification("تم تحديث سكربت zen hub\n- صيانة قلتش خيار اوتو اسست", Color3.fromRGB(255, 60, 60), 6)
+    end)
 
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
     mk("UICorner", SecurityPanel, {CornerRadius = UDim.new(0, 10)})
@@ -170,7 +180,7 @@ pcall(function()
                         deathCount = deathCount + 1
                         if deathCount >= 2 then
                             deathCount = 0
-                            showNotification(loseMsgs[math.random(1, #loseMsgs)])
+                            showNotification(loseMsgs[math.random(1, #loseMsgs)], Color3.fromRGB(220, 230, 245), 4)
                         end
                     end
                 end)
@@ -180,6 +190,17 @@ pcall(function()
 
     for _, p in pairs(Plrs:GetPlayers()) do setupPlayerTracking(p) end
     Plrs.PlayerAdded:Connect(setupPlayerTracking)
+
+    local function isWallBetween(pos1, pos2)
+        local rayParams = RaycastParams.new()
+        rayParams.FilterType = RaycastParams.FilterType.Exclude
+        rayParams.FilterDescendantsInstances = {LP.Character}
+        local result = workspace:Raycast(pos1, (pos2 - pos1), rayParams)
+        if result and result.Instance and not result.Instance:IsDescendantOf(Plrs:GetPlayerFromCharacter(result.Instance.Parent) and result.Instance.Parent or workspace) then
+            return true
+        end
+        return false
+    end
 
     local function isValidEnemy(eHrp, eP)
         if eP == LP or (LP.Team and eP.Team and LP.Team == eP.Team) or eHrp.Position.X < 20 then return false end
@@ -228,7 +249,9 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
+                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                            md, tp = d, p.Character.HumanoidRootPart.Position 
+                        end
                     end
                 end
                 if tp and md <= 9.5 then
@@ -242,7 +265,9 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
+                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                            md, tp = d, p.Character.HumanoidRootPart.Position 
+                        end
                     end
                 end
                 if tp and (hrp.Position - tp).Magnitude > 1.2 then hum:MoveTo(tp) end
@@ -259,7 +284,9 @@ pcall(function()
                 for _, p in pairs(Plrs:GetPlayers()) do
                     if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
                         local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
-                        if d < md then md, tp, cE = d, p.Character.HumanoidRootPart.Position, p.Character.HumanoidRootPart end
+                        if d < md and not isWallBetween(hrp.Position, p.Character.HumanoidRootPart.Position) then 
+                            md, tp, cE = d, p.Character.HumanoidRootPart.Position, p.Character.HumanoidRootPart 
+                        end
                     end
                 end
 
