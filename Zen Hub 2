@@ -50,7 +50,6 @@ pcall(function()
     mk("UICorner", DevAvatar, {CornerRadius = UDim.new(1, 0)})
     mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1})
 
-    -- جلب صورة بروفايل المطور clanzenontop أو اللاعب الأساسي
     pcall(function()
         local success, userId = pcall(function() return Plrs:GetUserIdFromNameAsync("clanzenontop") end)
         if not success or not userId then userId = LP.UserId end
@@ -74,10 +73,9 @@ pcall(function()
         end)
     end
 
-    -- إشعار التحديث عند التشغيل لمدة 6 ثوانٍ باللون الأحمر
     task.spawn(function()
         task.wait(1)
-        showNotification("تم تحديث سكربت zen hub\n- صيانة قلتش خيار اوتو اسست", Color3.fromRGB(255, 60, 60), 6)
+        showNotification("تم تحديث سكربت zen hub\n- دعم فحص السواتر والجدران الواطية", Color3.fromRGB(255, 60, 60), 6)
     end)
 
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
@@ -194,13 +192,21 @@ pcall(function()
     for _, p in pairs(Plrs:GetPlayers()) do setupPlayerTracking(p) end
     Plrs.PlayerAdded:Connect(setupPlayerTracking)
 
+    -- فحص ذكي: يسمح بتجاوز السواتر والجدران الواطية (مثل نظام الكلاسيك)
     local function isWallBetween(pos1, pos2)
         local rayParams = RaycastParams.new()
         rayParams.FilterType = RaycastParams.FilterType.Exclude
         rayParams.FilterDescendantsInstances = {LP.Character}
         local result = workspace:Raycast(pos1, (pos2 - pos1), rayParams)
-        if result and result.Instance and not result.Instance:IsDescendantOf(Plrs:GetPlayerFromCharacter(result.Instance.Parent) and result.Instance.Parent or workspace) then
-            return true
+        if result and result.Instance then
+            local hitPart = result.Instance
+            -- إذا كان العائق جداراً واطئاً أو ساتراً قصيراً (ارتفاعه أقل من 3.5 وحدة)، نسمح بالاستهداف عادي
+            if hitPart.Size.Y < 3.5 then
+                return false
+            end
+            if not hitPart:IsDescendantOf(Plrs:GetPlayerFromCharacter(hitPart.Parent) and hitPart.Parent or workspace) then
+                return true
+            end
         end
         return false
     end
