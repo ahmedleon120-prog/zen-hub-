@@ -75,7 +75,7 @@ pcall(function()
 
     task.spawn(function()
         task.wait(0.5)
-        showNotification("تم تحديث Zen Hub (ابو الزين)\n- اضافة خيار رؤية ماين تحت قسم الرؤية")
+        showNotification("تم تحديث Zen Hub (ابو الزين)\n- تعديل شكل أعداد القنابل لتكون بارزة مثل الفيديو")
     end)
 
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
@@ -112,9 +112,9 @@ pcall(function()
 
     local updLinesContainer = mk("Frame", UpdatesPanel, {Size = UDim2.new(1, -20, 1, -45), Position = UDim2.new(0, 10, 0, 38), BackgroundTransparency = 1})
     
-    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 0), "• اضافة خيار رؤية ماين", 11, Color3.fromRGB(0, 255, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 32), "• اضافة خيار الاوتو اسست", 11, Color3.fromRGB(255, 200, 0), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 64), "• تعديل بالردود التشجيعية وتحسينها", 11, Color3.fromRGB(255, 100, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 0), "• تعديل أرقام القنبلة لتكون واضحة مثل الفيديو", 11, Color3.fromRGB(0, 255, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 32), "• اضافة خيار رؤية ماين", 11, Color3.fromRGB(255, 200, 0), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 64), "• اضافة خيار الاوتو اسست", 11, Color3.fromRGB(255, 100, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 110), "انتظرو كل جديد ❤️", 13, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Center, Enum.Font.GothamBold)
 
     local AutoPanel = mk("Frame", G, {Size = UDim2.new(0, 240, 0, 140), Position = UDim2.new(0.5, -120, 0.2, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.05, Active = true, Draggable = true, Visible = false})
@@ -236,6 +236,77 @@ pcall(function()
         if bp then for _, t in pairs(bp:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then return true end end end
         return false
     end
+
+    -- نظام عرض أعداد القنبلة بوضوح وبارز مثل الفيديو تماماً
+    RS.Heartbeat:Connect(function()
+        pcall(function()
+            for _, p in pairs(Plrs:GetPlayers()) do
+                local char = p.Character
+                if char and char:FindFirstChild("Head") and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.Health > 0 then
+                    local head = char.Head
+                    local hasBomb = false
+                    local bombTimeVal = 0
+
+                    if char:FindFirstChild("Bomb") or char:FindFirstChild("HasBomb") then
+                        hasBomb = true
+                    else
+                        for _, item in pairs(char:GetChildren()) do
+                            if item:IsA("Tool") and (item.Name:lower():find("bomb") or item.Name:lower():find("ball")) then
+                                hasBomb = true
+                                break
+                            end
+                        end
+                    end
+
+                    if not hasBomb and p.Backpack then
+                        for _, item in pairs(p.Backpack:GetChildren()) do
+                            if item:IsA("Tool") and (item.Name:lower():find("bomb") or item.Name:lower():find("ball")) then
+                                hasBomb = true
+                                break
+                            end
+                        end
+                    end
+
+                    local valObj = char:FindFirstChild("BombTimer") or char:FindFirstChild("Timer") or (char:FindFirstChildOfClass("Tool") and char:FindFirstChildOfClass("Tool"):FindFirstChild("Timer"))
+                    if valObj and (valObj:IsA("NumberValue") or valObj:IsA("IntValue")) then
+                        bombTimeVal = math.ceil(valObj.Value)
+                    end
+
+                    local billboard = head:FindFirstChild("ZenBombBillboard")
+                    if hasBomb then
+                        if not billboard then
+                            billboard = Instance.new("BillboardGui", head)
+                            billboard.Name = "ZenBombBillboard"
+                            billboard.Size = UDim2.new(0, 80, 0, 50)
+                            billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+                            billboard.AlwaysOnTop = true
+
+                            local txt = Instance.new("TextLabel", billboard)
+                            txt.Name = "CountText"
+                            txt.Size = UDim2.new(1, 0, 1, 0)
+                            txt.BackgroundTransparency = 1
+                            txt.Font = Enum.Font.GothamBold
+                            txt.TextSize = 28
+                            txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            txt.TextStrokeTransparency = 0
+                            txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                            txt.TextXAlignment = Enum.TextXAlignment.Center
+                            txt.TextYAlignment = Enum.TextYAlignment.Center
+                        end
+                        local tLabel = billboard:FindFirstChild("CountText")
+                        if tLabel then
+                            tLabel.Text = bombTimeVal > 0 and tostring(bombTimeVal) or "💣"
+                        end
+                        billboard.Enabled = true
+                    else
+                        if billboard then
+                            billboard.Enabled = false
+                        end
+                    end
+                end
+            end
+        end)
+    end)
 
     RS.Heartbeat:Connect(function()
         pcall(function()
