@@ -38,7 +38,7 @@ pcall(function()
     local TopBar = mk("Frame", N, {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = Color3.fromRGB(16, 22, 33)})
     mk("UICorner", TopBar, {CornerRadius = UDim.new(0, 10)})
     mkLbl(TopBar, UDim2.new(1, -20, 0, 16), UDim2.new(0, 10, 0, 4), "Zen Hub | Official", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    mkLbl(TopBar, UDim2.new(1, -20, 0, 12), UDim2.new(0, 10, 0, 22), "By: clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+    mkLbl(TopBar, UDim2.new(1, -20, 0, 12), UDim2.new(0, 10, 0, 22), "By: Clanzenontop(المطور)", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
     local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 420), ScrollBarThickness = 5, BorderSizePixel = 0})
 
@@ -55,7 +55,7 @@ pcall(function()
         if isReady then DevAvatar.Image = content end
     end)
 
-    mkLbl(NotifFrame, UDim2.new(1, -55, 0, 16), UDim2.new(0, 54, 0, 6), "clanzenontop", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(NotifFrame, UDim2.new(1, -55, 0, 16), UDim2.new(0, 54, 0, 6), "Clanzenontop(المطور)", 9, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     local NotifText = mkLbl(NotifFrame, UDim2.new(1, -55, 0, 30), UDim2.new(0, 54, 0, 22), "", 8, Color3.fromRGB(255, 100, 100), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
 
     local function showNotification(txt, customColor, duration)
@@ -71,7 +71,7 @@ pcall(function()
         end)
     end
 
-    -- إشعار التحديث عند التشغيل لمدة 6 ثوانٍ بلون أحمر
+    -- إشعار التحديث عند التشغيل لمدة 6 ثوانٍ باللون الأحمر
     task.spawn(function()
         task.wait(1)
         showNotification("تم تحديث سكربت zen hub\n- صيانة قلتش خيار اوتو اسست", Color3.fromRGB(255, 60, 60), 6)
@@ -80,7 +80,7 @@ pcall(function()
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
     mk("UICorner", SecurityPanel, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", SecurityPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
-    mkLbl(SecurityPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 10, 0, 6), "شرح الحماية (clanzenontop)", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(SecurityPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 10, 0, 6), "شرح الحماية (Clanzenontop)", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
 
     local HideSecBtn = mk("TextButton", SecurityPanel, {Size = UDim2.new(0, 20, 0, 20), Position = UDim2.new(1, -26, 0, 8), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Text = "X", TextColor3 = Color3.fromRGB(240, 245, 255), TextSize = 11, Font = Enum.Font.GothamBold})
     mk("UICorner", HideSecBtn, {CornerRadius = UDim.new(1, 0)})
@@ -116,7 +116,7 @@ pcall(function()
     local InnerBox = mk("Frame", AutoPanel, {Size = UDim2.new(0.88, 0, 0, 28), Position = UDim2.new(0.06, 0, 0, 65), BackgroundColor3 = Color3.fromRGB(16, 22, 33), BackgroundTransparency = 0.2})
     mk("UICorner", InnerBox, {CornerRadius = UDim.new(0, 6)})
     local T = mkLbl(InnerBox, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), "", 9, Color3.fromRGB(230, 235, 245), Enum.TextXAlignment.Center, Enum.Font.GothamMedium)
-    local APFooter = mkLbl(AutoPanel, UDim2.new(1, 0, 0, 16), UDim2.new(0, 0, 0, 102), "By clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Center, Enum.Font.Gotham)
+    local APFooter = mkLbl(AutoPanel, UDim2.new(1, 0, 0, 16), UDim2.new(0, 0, 0, 102), "By Clanzenontop(المطور)", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Center, Enum.Font.Gotham)
 
     local panelVisible = true
     HideAPBtn.MouseButton1Click:Connect(function()
