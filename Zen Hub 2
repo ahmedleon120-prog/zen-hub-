@@ -2,7 +2,7 @@ pcall(function()
     local Plrs = game:GetService("Players")
     local RS = game:GetService("RunService")
     local LP = Plrs.LocalPlayer
-    local au, assistEnabled, autoDirectEnabled, stairClimbEnabled, squareViewEnabled, messagesEnabled = false, false, false, false, false, true
+    local au, assistEnabled, autoDirectEnabled, stairClimbEnabled, squareViewEnabled, mineVisionEnabled, messagesEnabled = false, false, false, false, false, false, true
     local protect_gui = protectgui or (gethui and function(g) g.Parent = gethui() end)
 
     local function rndStr()
@@ -41,9 +41,8 @@ pcall(function()
     
     local devNameLabel = mkLbl(TopBar, UDim2.new(1, -20, 0, 12), UDim2.new(0, 10, 0, 22), "By: clanzenontop (مطور)", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
-    local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 460), ScrollBarThickness = 5, BorderSizePixel = 0})
+    local Scroll = mk("ScrollingFrame", N, {Size = UDim2.new(1, -6, 1, -50), Position = UDim2.new(0, 3, 0, 45), BackgroundTransparency = 1, CanvasSize = UDim2.new(0, 0, 0, 500), ScrollBarThickness = 5, BorderSizePixel = 0})
 
-    -- الإشعارات والرسائل الحمراء السفلية مع صورة الحساب وكلمة مطور الملونة
     local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 330, 0, 65), Position = UDim2.new(0.5, -165, 0.80, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
     mk("UICorner", NotifFrame, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(255, 60, 60), Thickness = 1.5})
@@ -76,10 +75,9 @@ pcall(function()
 
     task.spawn(function()
         task.wait(0.5)
-        showNotification("تم تحديث Zen Hub (ابو الزين)\n- صيانة خيار اوتو اسست وتحسين الأداء")
+        showNotification("تم تحديث Zen Hub (ابو الزين)\n- اضافة خيار رؤية ماين تحت قسم الرؤية")
     end)
 
-    -- نافذة الشروحات
     local SecurityPanel = mk("Frame", G, {Size = UDim2.new(0, 290, 0, 225), Position = UDim2.new(0.33, 0, 0.28, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
     mk("UICorner", SecurityPanel, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", SecurityPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
@@ -103,7 +101,6 @@ pcall(function()
     addSecLine("• من 40% الى 30% :", "يعتبر غير امن وبنسه كبيره تتبند", "")
     addSecLine("• من 29% الى 1% :", "خطر خطر عاد انسى انت تتبند تتبد", "")
 
-    -- نافذة التحديثات الجديدة المرتبة (بألوان مختلفة لكل سطر)
     local UpdatesPanel = mk("Frame", G, {Size = UDim2.new(0, 310, 0, 250), Position = UDim2.new(0.35, 0, 0.3, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.03, Active = true, Draggable = true, Visible = false})
     mk("UICorner", UpdatesPanel, {CornerRadius = UDim.new(0, 10)})
     mk("UIStroke", UpdatesPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
@@ -115,7 +112,7 @@ pcall(function()
 
     local updLinesContainer = mk("Frame", UpdatesPanel, {Size = UDim2.new(1, -20, 1, -45), Position = UDim2.new(0, 10, 0, 38), BackgroundTransparency = 1})
     
-    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 0), "• اضافة خيار التحديثات", 11, Color3.fromRGB(0, 255, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 0), "• اضافة خيار رؤية ماين", 11, Color3.fromRGB(0, 255, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 32), "• اضافة خيار الاوتو اسست", 11, Color3.fromRGB(255, 200, 0), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 64), "• تعديل بالردود التشجيعية وتحسينها", 11, Color3.fromRGB(255, 100, 200), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     mkLbl(updLinesContainer, UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0, 110), "انتظرو كل جديد ❤️", 13, Color3.fromRGB(255, 60, 60), Enum.TextXAlignment.Center, Enum.Font.GothamBold)
@@ -169,7 +166,8 @@ pcall(function()
     O(126, "التسلق (ماب النط)", 98, function(s) stairClimbEnabled = s end)
 
     mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 164), "الرؤية", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    O(183, "ازالة اللاج", 99, function(s)
+    O(183, "رؤية ماين", 96, function(s) mineVisionEnabled = s end)
+    O(217, "ازالة اللاج", 99, function(s)
         if s then
             for _, v in pairs(workspace:GetDescendants()) do
                 if v:IsA("BasePart") and not v:IsDescendantOf(LP.Character) then v.Material = Enum.Material.SmoothPlastic v.CastShadow = false
@@ -177,18 +175,18 @@ pcall(function()
             end
         end
     end)
-    O(217, "الرؤية المستطيلة (FOV)", 97, function(s) squareViewEnabled = s end)
+    O(251, "الرؤية المستطيلة (FOV)", 97, function(s) squareViewEnabled = s end)
 
-    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 255), "الاعدادات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    O(274, "الردود التشجيعية", 100, function(s) messagesEnabled = s end, true)
+    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 289), "الاعدادات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    O(308, "الردود التشجيعية", 100, function(s) messagesEnabled = s end, true)
 
-    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 312), "الشروحات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-    local SecBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 331), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
+    mkLbl(Scroll, UDim2.new(1, -10, 0, 16), UDim2.new(0, 10, 0, 346), "الشروحات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+    local SecBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 365), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
     mk("UICorner", SecBtn, {CornerRadius = UDim.new(0, 6)})
     mkLbl(SecBtn, UDim2.new(1, -10, 1, 0), UDim2.new(0.08, 0, 0, 0), "شرح الأمان", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     SecBtn.MouseButton1Click:Connect(function() SecurityPanel.Visible = not SecurityPanel.Visible end)
 
-    local UpdMenuBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 368), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
+    local UpdMenuBtn = mk("TextButton", Scroll, {Size = UDim2.new(0.92, 0, 0, 30), Position = UDim2.new(0.04, 0, 0, 402), BackgroundColor3 = Color3.fromRGB(20, 28, 40), BackgroundTransparency = 0.1, Text = ""})
     mk("UICorner", UpdMenuBtn, {CornerRadius = UDim.new(0, 6)})
     mkLbl(UpdMenuBtn, UDim2.new(1, -10, 1, 0), UDim2.new(0.08, 0, 0, 0), "التحديثات", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
     UpdMenuBtn.MouseButton1Click:Connect(function() UpdatesPanel.Visible = not UpdatesPanel.Visible end)
@@ -253,6 +251,30 @@ pcall(function()
 
             local hrp = c:FindFirstChild("HumanoidRootPart")
             if not hrp then return end
+
+            if mineVisionEnabled then
+                pcall(function()
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p ~= LP and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                            local minePart = p.Character.HumanoidRootPart
+                            local highlight = minePart:FindFirstChild("ZenMineHighlight") or Instance.new("Highlight", minePart)
+                            highlight.Name = "ZenMineHighlight"
+                            highlight.FillColor = Color3.fromRGB(255, 60, 60)
+                            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                            highlight.FillTransparency = 0.4
+                        end
+                    end
+                end)
+            else
+                pcall(function()
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                            local h = p.Character.HumanoidRootPart:FindFirstChild("ZenMineHighlight")
+                            if h then h:Destroy() end
+                        end
+                    end
+                end)
+            end
 
             if stairClimbEnabled then
                 if workspace:FindPartOnRay(Ray.new(hrp.Position, hrp.CFrame.LookVector * 2.5), c) and (hrp.Velocity.Magnitude < 5) then 
