@@ -4,28 +4,33 @@ task.spawn(function()
         local LocalPlayer = Players.LocalPlayer
         local HttpService = game:GetService("HttpService")
 
-        -- [ نظام القائمة البيضاء والمحاولات ]
+        -- [ نظام القائمة البيضاء والمحاولات المخصصة ]
         -- true = محاولات غير محدودة
-        -- رقم = عدد المحاولات المسموح بها قبل الطرد التلقائي
+        -- رقم = عدد المحاولات المسموح بها قبل الطرد
         local allowedUsersWithAttempts = {
             ["ahmedleon120-prog"] = true,     -- المطور (غير محدود)
             ["clanzenontop"] = true,          -- المطور (غير محدود)
-            ["YOUOM68"] = 5,                  -- عدد المحاولات المحددة (5 محاولات)
-            -- أضف أشخاص آخرين هنا بهذا الشكل:
-            -- ["Username"] = 5,
+            ["YOUOM68"] = 7,                  -- عدد محاولات مخصص (7)
+            ["tuyofe8"] = 10,                 -- عدد محاولات مخصص (10)
         }
+        
+        -- الحد الافتراضي لأي لاعب مو موجود بالقائمة أعلاه
+        local defaultAttemptsForOthers = 10
 
         local username = LocalPlayer.Name
         local userSetting = allowedUsersWithAttempts[username]
-        local isAllowed = (userSetting ~= nil)
+        
+        -- السماح للمطورين أو أي لاعب بالدخول (الكل مصرح له، لكن المحاولات تختلف)
+        local isAllowed = true 
+        local maxAttempts = userSetting
 
-        if not isAllowed then
-            LocalPlayer:Kick("\n[ZEN HUB]\nAccess Denied. This account is not authorized to run the script.\nContact developer clanzenontop for access.")
-            return
+        -- إذا لم يكن اللاعب موجوداً في القائمة المخصصة، يأخذ الحد الافتراضي (10 محاولات)
+        if userSetting == nil then
+            maxAttempts = defaultAttemptsForOthers
         end
 
-        -- نظام تتبع المحاولات وتخزينها محلياً
-        if userSetting ~= true and type(userSetting) == "number" then
+        -- نظام تتبع المحاولات وتخزينها محلياً لكل يوزر بشكل مستقل
+        if maxAttempts ~= true and type(maxAttempts) == "number" then
             local saveKey = "ZenHub_Attempts_" .. username
             local currentAttempts = 0
             
@@ -36,8 +41,8 @@ task.spawn(function()
                 end
             end)
 
-            if currentAttempts >= userSetting then
-                LocalPlayer:Kick("\n[ZEN HUB]\nAccess Expired. You have used all your allowed attempts (" .. userSetting .. " attempts).\nContact developer clanzenontop to renew.")
+            if currentAttempts >= maxAttempts then
+                LocalPlayer:Kick("\n[ZEN HUB]\nAccess Expired. You have used all your allowed attempts (" .. maxAttempts .. " attempts).\nContact developer clanzenontop to renew.")
                 return
             end
 
@@ -140,7 +145,7 @@ task.spawn(function()
         local WarnBox = mk("Frame", InfoPage, {Size = UDim2.new(0.94, 0, 0, 80), Position = UDim2.new(0.03, 0, 0, 82), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.15})
         mk("UICorner", WarnBox, {CornerRadius = UDim.new(0, 10)})
         mk("UIStroke", WarnBox, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.2})
-        local wLbl = mkLbl(WarnBox, UDim2.new(0.92, 0, 1, 0), UDim2.new(0.04, 0, 0, 0), "- نظام ذكي للقائمة البيضاء وحد المحاولات.\n- مطور المشروع: clanzenontop", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        local wLbl = mkLbl(WarnBox, UDim2.new(0.92, 0, 1, 0), UDim2.new(0.04, 0, 0, 0), "- نظام ذكي لتخصيص محاولات اللاعبين.\n- مطور المشروع: clanzenontop", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
         wLbl.TextWrapped = true
 
         mkLbl(UserAccountPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "معلومات الحساب الشخصي", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
@@ -349,7 +354,7 @@ task.spawn(function()
         O(QualityPage, 115, "عرض مربع", "يفعل عرض نسبة الابعاد المربعة السينمائية", "90%", Color3.fromRGB(0, 255, 140), function(s) squareViewEnabled = s end)
 
         mkLbl(InteractPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "التفاعل والدردشة", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-        O(InteractPage, 35, "ردود محفزة", "يعرض رسائل تحفيزية وداعمة مخصصة عند الأحداث", "95%", Color3.fromRGB(0, 255, 140), function(s) interactiveMsgsEnabled = s end, true)
+        O(InteractPage, 35, "ردود محفزة", "يعرس رسائل تحفيزية وداعمة مخصصة عند الأحداث", "95%", Color3.fromRGB(0, 255, 140), function(s) interactiveMsgsEnabled = s end, true)
 
         local deathCount = 0
         local loseMsgs = {"استمر في التقدم ولاتهتم 💔", "ابقَ مركزاً وحاول مجدداً", "حظ أوفر في المرة القادمة 🥀"}
