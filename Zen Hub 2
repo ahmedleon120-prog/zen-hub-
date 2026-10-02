@@ -1,109 +1,482 @@
--- ==========================================
--- ZEN HUB | by clanzenontop
--- ==========================================
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local CoreGui = game:GetService("CoreGui")
+task.spawn(function()
+    pcall(function()
+        local Plrs = game:GetService("Players")
+        local RS = game:GetService("RunService")
+        local LP = Plrs.LocalPlayer
+        local au, assistEnabled, autoDirectEnabled, stairClimbEnabled, squareViewEnabled, interactiveMsgsEnabled, holdSkillEnabled = false, false, false, false, false, true, false
+        local protect_gui = protectgui or (gethui and function(g) g.Parent = gethui() end)
 
--- إشعار التأكيد على أن السكربت اشتغل بنجاح في دلتا
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "ZEN HUB",
-    Text = "تم تفعيل السكربت بنجاح بواسطة clanzenontop!",
-    Duration = 5
-})
+        local function rndStr()
+            local c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+            local s = ""
+            for i = 1, math.random(16, 24) do s = s .. string.sub(c, math.random(1, #c), math.random(1, #c)) end
+            return s
+        end
 
--- إنشاء واجهة المستخدم (UI) الأساسية
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "ZenHubUI"
--- حماية الواجهة لتدخل في CoreGui إذا يدعمها المنفذ، أو PlayerGui كبديل آمن
-pcall(function()
-    ScreenGui.Parent = CoreGui
-end)
-if not ScreenGui.Parent then
-    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-end
+        local G = Instance.new("ScreenGui", protect_gui and nil or game:GetService("CoreGui"))
+        G.Name, G.ResetOnSpawn = rndStr(), false
+        if protect_gui then protect_gui(G) end
 
--- الإطار الرئيسي للواجهة
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 350, 0, 250)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true -- لكي تقبل السحب والإفلات على الهاتف
-MainFrame.Parent = ScreenGui
+        local function mk(cls, p, props)
+            local o = Instance.new(cls, p)
+            o.Name = rndStr()
+            for k, v in pairs(props) do o[k] = v end
+            return o
+        end
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+        local function mkLbl(p, sz, pos, txt, szs, col, alg, font)
+            return mk("TextLabel", p, {Size = sz, Position = pos, Text = txt, TextSize = szs, TextColor3 = col, Font = font or Enum.Font.GothamMedium, BackgroundTransparency = 1, TextXAlignment = alg or Enum.TextXAlignment.Left})
+        end
 
--- عنوان الواجهة
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundTransparency = 1
-Title.Text = "ZEN HUB [ Time Bomb ]"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.Font = Enum.Font.SourceSansBold
-Title.Parent = MainFrame
+        -- زر فتح واغلاق القائمة العائم
+        local B = mk("TextButton", G, {Size = UDim2.new(0, 48, 0, 48), Position = UDim2.new(0.05, 0, 0.15, 0), BackgroundColor3 = Color3.fromRGB(15, 22, 35), Text = "Z", TextColor3 = Color3.fromRGB(0, 255, 140), TextSize = 18, Active = true, Draggable = true, Font = Enum.Font.GothamBold})
+        mk("UICorner", B, {CornerRadius = UDim.new(1, 0)})
+        mk("UIStroke", B, {Color = Color3.fromRGB(0, 255, 140), Thickness = 2.5})
+        mk("UIGradient", B, {Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 33, 50)), ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 15, 25))}, Rotation = 45})
 
--- الحقوق تحت العنوان
-local Credits = Instance.new("TextLabel")
-Credits.Size = UDim2.new(1, 0, 0, 20)
-Credits.Position = UDim2.new(0, 0, 0, 35)
-Credits.BackgroundTransparency = 1
-Credits.Text = "by clanzenontop"
-Credits.TextColor3 = Color3.fromRGB(150, 150, 150)
-Credits.TextSize = 14
-Credits.Font = Enum.Font.SourceSansItalic
-Credits.Parent = MainFrame
+        -- النافذة الرئيسية بتصميم منسق ومريح
+        local N = mk("Frame", G, {Size = UDim2.new(0, 520, 0, 380), Position = UDim2.new(0.5, 0, 0.5, 0), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(10, 14, 20), BackgroundTransparency = 0.04, Visible = false, Active = true, Draggable = true})
+        mk("UICorner", N, {CornerRadius = UDim.new(0, 16)})
+        mk("UIStroke", N, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.8})
+        mk("UIGradient", N, {Color = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(16, 23, 35)), ColorSequenceKeypoint.new(1, Color3.fromRGB(8, 12, 18))}, Rotation = 90})
 
--- زر تفعيل ميزة التتبع (Character Movement Tracking) بناءً على طلبك
-local TrackButton = Instance.new("TextButton")
-TrackButton.Size = UDim2.new(0, 300, 0, 50)
-TrackButton.Position = UDim2.new(0.5, -150, 0, 70)
-TrackButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-TrackButton.Text = "تفعيل تتبع الحركة"
-TrackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TrackButton.TextSize = 16
-TrackButton.Font = Enum.Font.SourceSansBold
-TrackButton.Parent = MainFrame
+        -- شريط العنوان العلوي
+        local TopBar = mk("Frame", N, {Size = UDim2.new(1, 0, 0, 40), BackgroundColor3 = Color3.fromRGB(14, 20, 30)})
+        mk("UICorner", TopBar, {CornerRadius = UDim.new(0, 16)})
+        mkLbl(TopBar, UDim2.new(1, -20, 0, 18), UDim2.new(0, 14, 0, 4), "Zen Hub", 12, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        local devNameLabel = mkLbl(TopBar, UDim2.new(1, -20, 0, 14), UDim2.new(0, 14, 0, 22), "by clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
-local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(0, 8)
-ButtonCorner.Parent = TrackButton
+        -- زر الإغلاق (×)
+        local CloseBtn = mk("TextButton", TopBar, {Size = UDim2.new(0, 28, 0, 28), Position = UDim2.new(1, -34, 0, 6), BackgroundColor3 = Color3.fromRGB(255, 70, 70), BackgroundTransparency = 0.2, Text = "×", TextColor3 = Color3.fromRGB(255, 255, 255), TextSize = 16, Font = Enum.Font.GothamBold})
+        mk("UICorner", CloseBtn, {CornerRadius = UDim.new(1, 0)})
+        CloseBtn.MouseButton1Click:Connect(function() N.Visible = false end)
 
--- وظيفة الزر (تتبع الحركة بدلاً من الكاميرا)
-local trackingActive = false
-TrackButton.MouseButton1Click:Connect(function()
-    trackingActive = not trackingActive
-    if trackingActive then
-        TrackButton.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
-        TrackButton.Text = "تم التفعيل: جاري تتبع حركة الشخصية"
-        print("ZEN HUB: Character movement tracking enabled by clanzenontop")
-    else
-        TrackButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-        TrackButton.Text = "تفعيل تتبع الحركة"
-        print("ZEN HUB: Tracking disabled")
-    end
-end)
+        -- الشريط الجانبي والأقسام
+        local Sidebar = mk("Frame", N, {Size = UDim2.new(0, 140, 1, -40), Position = UDim2.new(0, 0, 0, 40), BackgroundColor3 = Color3.fromRGB(8, 12, 17)})
+        
+        local activeTabIndicator = mk("Frame", Sidebar, {Size = UDim2.new(0, 4, 0, 24), Position = UDim2.new(0, 0, 0, 14), BackgroundColor3 = Color3.fromRGB(0, 255, 140)})
+        mk("UICorner", activeTabIndicator, {CornerRadius = UDim.new(1, 0)})
 
--- زر إغلاق الواجهة
-local CloseButton = Instance.new("TextButton")
-CloseButton.Size = UDim2.new(0, 300, 0, 40)
-CloseButton.Position = UDim2.new(0.5, -150, 0, 140)
-CloseButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-CloseButton.Text = "إغلاق الواجهة"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 25]
-CloseButton.TextSize = 14
-CloseButton.Font = Enum.Font.SourceSansBold
-CloseButton.Parent = MainFrame
+        local tabInfoBtn = mkLbl(Sidebar, UDim2.new(1, -15, 0, 24), UDim2.new(0, 14, 0, 14), "المعلومات", 11, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        local tabCombatBtn = mkLbl(Sidebar, UDim2.new(1, -15, 0, 24), UDim2.new(0, 14, 0, 52), "الهجوم", 11, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        local tabSkillsBtn = mkLbl(Sidebar, UDim2.new(1, -15, 0, 24), UDim2.new(0, 14, 0, 90), "المهارات", 11, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        local tabQualityBtn = mkLbl(Sidebar, UDim2.new(1, -15, 0, 24), UDim2.new(0, 14, 0, 128), "الجودة", 11, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        local tabInteractBtn = mkLbl(Sidebar, UDim2.new(1, -15, 0, 24), UDim2.new(0, 14, 0, 166), "التفاعلات", 11, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
 
-local CloseCorner = Instance.new("UICorner")
-CloseCorner.CornerRadius = UDim.new(0, 8)
-CloseCorner.Parent = CloseButton
+        -- بطاقة معلومات المستخدم الجانبية
+        local SidebarFooter = mk("Frame", Sidebar, {Size = UDim2.new(1, -10, 0, 48), Position = UDim2.new(0, 5, 1, -54), BackgroundColor3 = Color3.fromRGB(12, 18, 28), BackgroundTransparency = 0.2})
+        mk("UICorner", SidebarFooter, {CornerRadius = UDim.new(0, 10)})
+        
+        local UserAvatarSide = mk("ImageLabel", SidebarFooter, {Size = UDim2.new(0, 34, 0, 34), Position = UDim2.new(0, 7, 0, 7), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
+        mk("UICorner", UserAvatarSide, {CornerRadius = UDim.new(1, 0)})
+        mk("UIStroke", UserAvatarSide, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1})
 
-CloseButton.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+        mkLbl(SidebarFooter, UDim2.new(1, -45, 0, 16), UDim2.new(0, 45, 0, 7), LP.Name, 8, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(SidebarFooter, UDim2.new(1, -45, 0, 16), UDim2.new(0, 45, 0, 23), "Script User", 7, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+
+        task.spawn(function()
+            pcall(function()
+                local content, isReady = Plrs:GetUserThumbnailAsync(LP.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+                if isReady then UserAvatarSide.Image = content end
+            end)
+        end)
+
+        local ContentArea = mk("Frame", N, {Size = UDim2.new(1, -145, 1, -45), Position = UDim2.new(0, 142, 0, 42), BackgroundTransparency = 1})
+
+        local InfoPage = mk("Frame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = true})
+        
+        local DevAvatarInfo = mk("ImageLabel", InfoPage, {Size = UDim2.new(0, 52, 0, 52), Position = UDim2.new(0.04, 0, 0, 15), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
+        mk("UICorner", DevAvatarInfo, {CornerRadius = UDim.new(1, 0)})
+        mk("UIStroke", DevAvatarInfo, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.8})
+
+        mkLbl(InfoPage, UDim2.new(0.7, 0, 0, 22), UDim2.new(0.23, 0, 0, 16), "مطور السكربت الوحيد :", 11, Color3.fromRGB(200, 215, 235), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        local infoDevName = mkLbl(InfoPage, UDim2.new(0.7, 0, 0, 22), UDim2.new(0.23, 0, 0, 36), "clanzenontop", 11, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+
+        local WarnBox = mk("Frame", InfoPage, {Size = UDim2.new(0.94, 0, 0, 80), Position = UDim2.new(0.03, 0, 0, 82), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.15})
+        mk("UICorner", WarnBox, {CornerRadius = UDim.new(0, 10)})
+        mk("UIStroke", WarnBox, {Color = Color3.fromRGB(255, 200, 0), Thickness = 1.2})
+        
+        local warnText = "- هذا السكربت آمن جدا ولكن ينصح استعمال خيار الاسست لافضل تجربة ممكنة وآمنة"
+        local wLbl = mkLbl(WarnBox, UDim2.new(0.92, 0, 1, 0), UDim2.new(0.04, 0, 0, 0), warnText, 10, Color3.fromRGB(255, 230, 100), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        wLbl.TextWrapped = true
+
+        local CombatPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 350), ScrollBarThickness = 3, BorderSizePixel = 0})
+        local SkillsPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 280), ScrollBarThickness = 3, BorderSizePixel = 0})
+        local QualityPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 230), ScrollBarThickness = 3, BorderSizePixel = 0})
+        local InteractPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 160), ScrollBarThickness = 3, BorderSizePixel = 0})
+
+        local function switchTab(tabIndex)
+            InfoPage.Visible = (tabIndex == 1)
+            CombatPage.Visible = (tabIndex == 2)
+            SkillsPage.Visible = (tabIndex == 3)
+            QualityPage.Visible = (tabIndex == 4)
+            InteractPage.Visible = (tabIndex == 5)
+
+            tabInfoBtn.TextColor3 = (tabIndex == 1) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(170, 185, 210)
+            tabCombatBtn.TextColor3 = (tabIndex == 2) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(170, 185, 210)
+            tabSkillsBtn.TextColor3 = (tabIndex == 3) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(170, 185, 210)
+            tabQualityBtn.TextColor3 = (tabIndex == 4) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(170, 185, 210)
+            tabInteractBtn.TextColor3 = (tabIndex == 5) and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(170, 185, 210)
+
+            activeTabIndicator.Position = UDim2.new(0, 0, 0, tabIndex == 1 and 14 or (tabIndex == 2 and 52 or (tabIndex == 3 and 90 or (tabIndex == 4 and 128 or 166))))
+        end
+
+        local function setupTabClick(btn, idx, lbl)
+            btn.MouseButton1Click:Connect(function()
+                switchTab(idx)
+                lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+                task.delay(0.15, function()
+                    if (idx == 1 and tabInfoBtn ~= lbl) or (idx == 2 and tabCombatBtn ~= lbl) or (idx == 3 and tabSkillsBtn ~= lbl) or (idx == 4 and tabQualityBtn ~= lbl) or (idx == 5 and tabInteractBtn ~= lbl) then
+                        lbl.TextColor3 = Color3.fromRGB(170, 185, 210)
+                    end
+                end)
+            end)
+        end
+
+        local btnInfoClick = mk("TextButton", Sidebar, {Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 10), BackgroundTransparency = 1, Text = ""})
+        setupTabClick(btnInfoClick, 1, tabInfoBtn)
+        local btnCombatClick = mk("TextButton", Sidebar, {Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 48), BackgroundTransparency = 1, Text = ""})
+        setupTabClick(btnCombatClick, 2, tabCombatBtn)
+        local btnSkillsClick = mk("TextButton", Sidebar, {Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 86), BackgroundTransparency = 1, Text = ""})
+        setupTabClick(btnSkillsClick, 3, tabSkillsBtn)
+        local btnQualityClick = mk("TextButton", Sidebar, {Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 124), BackgroundTransparency = 1, Text = ""})
+        setupTabClick(btnQualityClick, 4, tabQualityBtn)
+        local btnInteractClick = mk("TextButton", Sidebar, {Size = UDim2.new(1, 0, 0, 32), Position = UDim2.new(0, 0, 0, 162), BackgroundTransparency = 1, Text = ""})
+        setupTabClick(btnInteractClick, 5, tabInteractBtn)
+
+        -- نظام الإشعارات المنبثقة
+        local NotifFrame = mk("Frame", G, {Size = UDim2.new(0, 330, 0, 65), Position = UDim2.new(0.5, -165, 0.78, 0), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.05, Visible = false})
+        mk("UICorner", NotifFrame, {CornerRadius = UDim.new(0, 12)})
+        mk("UIStroke", NotifFrame, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
+
+        local DevAvatar = mk("ImageLabel", NotifFrame, {Size = UDim2.new(0, 46, 0, 46), Position = UDim2.new(0, 10, 0, 9), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
+        mk("UICorner", DevAvatar, {CornerRadius = UDim.new(1, 0)})
+        mk("UIStroke", DevAvatar, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1})
+
+        task.spawn(function()
+            pcall(function()
+                local targetUserId = LP.UserId
+                pcall(function() targetUserId = Plrs:GetUserIdFromNameAsync("clanzenontop") end)
+                local content, isReady = Plrs:GetUserThumbnailAsync(targetUserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+                if isReady then DevAvatar.Image = content end
+            end)
+        end)
+
+        mkLbl(NotifFrame, UDim2.new(1, -65, 0, 16), UDim2.new(0, 64, 0, 6), "clanzenontop", 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(NotifFrame, UDim2.new(1, -135, 0, 16), UDim2.new(0, 135, 0, 6), "(مطور)", 9, Color3.fromRGB(255, 255, 255), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        local NotifText = mkLbl(NotifFrame, UDim2.new(1, -65, 0, 28), UDim2.new(0, 64, 0, 24), "", 9, Color3.fromRGB(220, 245, 235), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+
+        local function showNotification(txt)
+            NotifText.Text = txt
+            NotifFrame.Visible = true
+            task.delay(6, function() if NotifText.Text == txt then NotifFrame.Visible = false end end)
+        end
+
+        task.spawn(function()
+            task.wait(0.5)
+            showNotification("تم تشغيل Zen Hub بنجاح\n- by clanzenontop")
+        end)
+
+        -- لوحة التحكم المصغرة العائمة
+        local AutoPanel = mk("Frame", G, {Size = UDim2.new(0, 240, 0, 140), Position = UDim2.new(0.85, 0, 0.2, 0), BackgroundColor3 = Color3.fromRGB(10, 14, 22), BackgroundTransparency = 0.05, Active = true, Draggable = true, Visible = false})
+        mk("UICorner", AutoPanel, {CornerRadius = UDim.new(0, 12)})
+        mk("UIStroke", AutoPanel, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.5})
+        mkLbl(AutoPanel, UDim2.new(1, -30, 0, 25), UDim2.new(0, 10, 0, 4), "Zen Hub Control", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+
+        local HideAPBtn = mk("TextButton", AutoPanel, {Size = UDim2.new(0, 22, 0, 22), Position = UDim2.new(1, -28, 0, 5), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Text = "-", TextColor3 = Color3.fromRGB(240, 245, 255), TextSize = 13, Font = Enum.Font.GothamBold})
+        mk("UICorner", HideAPBtn, {CornerRadius = UDim.new(1, 0)})
+
+        local ToggleRunBtn = mk("TextButton", AutoPanel, {Size = UDim2.new(0.88, 0, 0, 28), Position = UDim2.new(0.06, 0, 0, 32), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.2, Text = ""})
+        mk("UICorner", ToggleRunBtn, {CornerRadius = UDim.new(0, 6)})
+        mkLbl(ToggleRunBtn, UDim2.new(0.55, 0, 1, 0), UDim2.new(0.08, 0, 0, 0), "تشغيل", 10, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left)
+        local runStatusIndicator = mkLbl(ToggleRunBtn, UDim2.new(0.35, 0, 1, 0), UDim2.new(0.58, 0, 0, 0), "OFF", 9, Color3.fromRGB(130, 145, 170), Enum.TextXAlignment.Right)
+
+        local InnerBox = mk("Frame", AutoPanel, {Size = UDim2.new(0.88, 0, 0, 28), Position = UDim2.new(0.06, 0, 0, 65), BackgroundColor3 = Color3.fromRGB(16, 22, 33), BackgroundTransparency = 0.2})
+        mk("UICorner", InnerBox, {CornerRadius = UDim.new(0, 6)})
+        local T = mkLbl(InnerBox, UDim2.new(1, 0, 1, 0), UDim2.new(0, 0, 0, 0), "", 9, Color3.fromRGB(230, 235, 245), Enum.TextXAlignment.Center, Enum.Font.GothamMedium)
+        local APFooter = mkLbl(AutoPanel, UDim2.new(1, 0, 0, 16), UDim2.new(0, 0, 0, 102), "by clanzenontop", 8, Color3.fromRGB(120, 140, 170), Enum.TextXAlignment.Center, Enum.Font.Gotham)
+
+        local panelVisible = true
+        HideAPBtn.MouseButton1Click:Connect(function()
+            panelVisible = not panelVisible
+            InnerBox.Visible, ToggleRunBtn.Visible, APFooter.Visible = panelVisible, panelVisible, panelVisible
+            AutoPanel.Size = panelVisible and UDim2.new(0, 240, 0, 140) or UDim2.new(0, 240, 0, 35)
+            HideAPBtn.Text = panelVisible and "-" or "+"
+        end)
+
+        B.MouseButton1Click:Connect(function() N.Visible = not N.Visible end)
+
+        local function O(parent, y, t, descText, pctText, pctColor, cb, defaultOn)
+            local b = mk("TextButton", parent, {Size = UDim2.new(0.94, 0, 0, 72), Position = UDim2.new(0.03, 0, 0, y), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.2, Text = ""})
+            mk("UICorner", b, {CornerRadius = UDim.new(0, 10)})
+            mk("UIStroke", b, {Color = Color3.fromRGB(30, 45, 65), Thickness = 1})
+            
+            mkLbl(b, UDim2.new(0.60, 0, 0, 22), UDim2.new(0.04, 0, 0, 6), t, 10, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+            
+            local toggleCircle = mk("Frame", b, {Size = UDim2.new(0, 48, 0, 24), Position = UDim2.new(0.80, 0, 0, 8), BackgroundColor3 = defaultOn and Color3.fromRGB(0, 255, 140) or Color3.fromRGB(25, 35, 50)})
+            mk("UICorner", toggleCircle, {CornerRadius = UDim.new(1, 0)})
+            mk("UIStroke", toggleCircle, {Color = defaultOn and Color3.fromRGB(50, 255, 160) or Color3.fromRGB(45, 60, 80), Thickness = 1.5})
+
+            local knob = mk("Frame", toggleCircle, {Size = UDim2.new(0, 18, 0, 18), Position = defaultOn and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9), BackgroundColor3 = Color3.fromRGB(255, 255, 255)})
+            mk("UICorner", knob, {CornerRadius = UDim.new(1, 0)})
+
+            local dLbl = mkLbl(b, UDim2.new(0.92, 0, 0, 34), UDim2.new(0.04, 0, 0, 32), descText .. " (نسبة الأمان: ", 8, Color3.fromRGB(160, 175, 200), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+            dLbl.TextWrapped = true
+
+            local pLbl = mkLbl(dLbl, UDim2.new(0, 40, 1, 0), UDim2.new(1, 0, 0, 0), pctText, 8, pctColor, Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+            
+            local act = defaultOn or false
+            b.MouseButton1Click:Connect(function()
+                act = not act
+                toggleCircle.BackgroundColor3 = act and Color3.fromRGB(0, 255, 140) or Color3.fromRGB(25, 35, 50)
+                toggleCircle.BorderColor3 = act and Color3.fromRGB(50, 255, 160) or Color3.fromRGB(45, 60, 80)
+                knob:TweenPosition(act and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
+                cb(act)
+            end)
+            return b
+        end
+
+        -- قسم الهجوم
+        mkLbl(CombatPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "أدوات الهجوم والقتال", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        O(CombatPage, 35, "اوتو اسست", "هذا الخيار اكثر خيار آمن لان ردات فعل هذا الخيار شبيهة بلاعب عادي", "80%", Color3.fromRGB(0, 255, 140), function(s) au = s AutoPanel.Visible = s if not s then T.Text = "" end end)
+        O(CombatPage, 115, "اسست", "يثبت ايمك بنعومة وبنفس الوقت يمديك تلف وتتحكم بكاميرتك بكل حرية", "95%", Color3.fromRGB(0, 255, 140), function(s) assistEnabled = s end)
+        O(CombatPage, 195, "اوتو", "هذا الخيار اوتو عادي يتبع الخصم المشهور لكن سهل تنقفط فيه", "50%", Color3.fromRGB(255, 220, 50), function(s) autoDirectEnabled = s end)
+        O(CombatPage, 275, "التسلق السريع (ماب النط)", "هذا الخيار قيد التطوير وتطلع بالدرج بنطة واحدة", "99%", Color3.fromRGB(0, 255, 140), function(s) stairClimbEnabled = s end)
+
+        -- قسم المهارات (مع القائمة الفرعية "ابو الزين")
+        mkLbl(SkillsPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "مهارات وتكتيكات متقدمة", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        
+        local holdSubMenuVisible = false
+        local holdMainBtn = O(SkillsPage, 35, "هولد", "اذا السكربت لقى فرصه يسوي هولد نحو العدو ويقتله", "92%", Color3.fromRGB(0, 255, 140), function(s) 
+            holdSkillEnabled = s 
+        end)
+
+        -- إنشاء القائمة المصغرة الفرعية باسم "ابو الزين" تظهر أسفل خيار هولد
+        local HoldSubMenu = mk("Frame", SkillsPage, {Size = UDim2.new(0.94, 0, 0, 60), Position = UDim2.new(0.03, 0, 0, 112), BackgroundColor3 = Color3.fromRGB(12, 17, 26), BackgroundTransparency = 0.1, Visible = false})
+        mk("UICorner", HoldSubMenu, {CornerRadius = UDim.new(0, 8)})
+        mk("UIStroke", HoldSubMenu, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1})
+        mkLbl(HoldSubMenu, UDim2.new(0.9, 0, 0, 18), UDim2.new(0.06, 0, 0, 6), "قائمة ابو الزين", 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+
+        local subSpinActive = false
+        local SubToggleBtn = mk("TextButton", HoldSubMenu, {Size = UDim2.new(0.88, 0, 0, 26), Position = UDim2.new(0.06, 0, 0, 28), BackgroundColor3 = Color3.fromRGB(18, 25, 38), Text = "الدوران والتوجه للخصم (إعطاء القنبلة): OFF", TextColor3 = Color3.fromRGB(200, 215, 235), TextSize = 8, Font = Enum.Font.GothamMedium})
+        mk("UICorner", SubToggleBtn, {CornerRadius = UDim.new(0, 6)})
+
+        SubToggleBtn.MouseButton1Click:Connect(function()
+            subSpinActive = not subSpinActive
+            SubToggleBtn.Text = subSpinActive and "الدوران والتوجه للخصم (إعطاء القنبلة): ON" or "الدوران والتوجه للخصم (إعطاء القنبلة): OFF"
+            SubToggleBtn.TextColor3 = subSpinActive and Color3.fromRGB(0, 255, 140) or Color3.fromRGB(200, 215, 235)
+        end)
+
+        -- زر الهولد الأساسي يظهر أو يخفي القائمة الفرعية عند الضغط عليه
+        holdMainBtn.MouseButton1Click:Connect(function()
+            holdSubMenuVisible = not holdSubMenuVisible
+            HoldSubMenu.Visible = holdSubMenuVisible
+            if holdSubMenuVisible then
+                SkillsPage.CanvasSize = UDim2.new(0, 0, 0, 340)
+            else
+                SkillsPage.CanvasSize = UDim2.new(0, 0, 0, 280)
+            end
+        end)
+
+        -- قسم الجودة
+        mkLbl(QualityPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "إعدادات الجودة والأداء", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        O(QualityPage, 35, "ازالة اللاق", "هذا يزيل لك اللاق وبرضو يعطيك شكل جمالي", "90%", Color3.fromRGB(0, 255, 140), function(s)
+            if s then
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if v:IsA("BasePart") and not v:IsDescendantOf(LP.Character) then v.Material = Enum.Material.SmoothPlastic v.CastShadow = false
+                    elseif v:IsA("Decal") or v:IsA("Texture") or v:IsA("ParticleEmitter") then v:Destroy() end
+                end
+            end
+        end)
+        O(QualityPage, 115, "رؤية المستطيلة", "هذا الخيار يعطيك رؤية مستطيلة نفس بعض الفيديوهات بالتيك توك", "90%", Color3.fromRGB(0, 255, 140), function(s) squareViewEnabled = s end)
+
+        -- قسم التفاعلات
+        mkLbl(InteractPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "التفاعلات والرسائل التلقائية", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        O(InteractPage, 35, "الردود التشجيعية", "تعرض ردودك التشجيعية عند القتل وردود التحفيز عند الموت", "95%", Color3.fromRGB(0, 255, 140), function(s) interactiveMsgsEnabled = s end, true)
+
+        local deathCount = 0
+        local loseMsgs = {"ليه صاير نوب💔", "شد اللعب شويه", "حظ اوفر للمره الجايه🥀"}
+        local winMsgs = {"كفو والي بعده🔥", "يا وحش استمر💪", "جلد مرتب😎"}
+
+        local function setupPlayerTracking(player)
+            player.CharacterAdded:Connect(function(char)
+                local hum = char:WaitForChild("Humanoid", 5)
+                if hum then
+                    hum.Died:Connect(function()
+                        if player == LP and interactiveMsgsEnabled then
+                            deathCount = deathCount + 1
+                            if deathCount >= 2 then
+                                deathCount = 0
+                                showNotification(loseMsgs[math.random(1, #loseMsgs)])
+                            end
+                        end
+                    end)
+                end
+            end)
+        end
+
+        for _, p in pairs(Plrs:GetPlayers()) do setupPlayerTracking(p) end
+        Plrs.PlayerAdded:Connect(setupPlayerTracking)
+
+        task.spawn(function()
+            while task.wait(1) do
+                pcall(function()
+                    if interactiveMsgsEnabled and LP.Character then
+                        local leaderstats = LP:FindFirstChild("leaderstats")
+                        local ks = leaderstats and (leaderstats:FindFirstChild("Kills") or leaderstats:FindFirstChild("KO's") or leaderstats:FindFirstChild("Score"))
+                        if ks then
+                            local currentKills = ks.Value
+                            if _G.lastKills and currentKills > _G.lastKills then
+                                showNotification(winMsgs[math.random(1, #winMsgs)])
+                            end
+                            _G.lastKills = currentKills
+                        end
+                    end
+                end)
+            end
+        end)
+
+        -- دالة مدققة صارمة تمنع استهداف أي شخص معك في نفس الفريق (Team) أو نفسك
+        local function isValidEnemy(eHrp, eP)
+            if eP == LP then return false end
+            
+            if LP.Team and eP.Team then
+                if LP.Team == eP.Team then return false end
+            end
+            
+            local eHum = eP.Character and eP.Character:FindFirstChildOfClass("Humanoid")
+            if not eHum or eHum.Health <= 0 then return false end
+            if eHrp.Position.X < 20 then return false end
+            return true
+        end
+
+        local internalRun = false
+        ToggleRunBtn.MouseButton1Click:Connect(function()
+            internalRun = not internalRun
+            runStatusIndicator.Text, runStatusIndicator.TextColor3 = internalRun and "ON" or "OFF", internalRun and Color3.fromRGB(0, 255, 140) or Color3.fromRGB(130, 145, 170)
+        end)
+
+        local function HB(c)
+            local bp = LP.Backpack
+            if c:FindFirstChild("Bomb") or c:FindFirstChild("HasBomb") or (bp and bp:FindFirstChild("Bomb")) then return true end
+            for _, t in pairs(c:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then then return true end end end
+            if bp then for _, t in pairs(bp:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then then return true end end end
+            return false
+        end
+
+        RS.Heartbeat:Connect(function()
+            pcall(function()
+                workspace.CurrentCamera.FieldOfView = squareViewEnabled and 50 or 70
+
+                local c = LP.Character
+                local hum = c and c:FindFirstChildOfClass("Humanoid")
+                
+                if not c or not hum or hum.Health <= 0 then
+                    if au then T.Text = "" end
+                    return
+                end
+
+                local hrp = c:FindFirstChild("HumanoidRootPart")
+                if not hrp then return end
+
+                if stairClimbEnabled then
+                    if workspace:FindPartOnRay(Ray.new(hrp.Position, hrp.CFrame.LookVector * 2.5), c) and (hrp.Velocity.Magnitude < 5) then 
+                        hum.Jump = true 
+                    end
+                end
+
+                -- خيار الأسست
+                if assistEnabled and HB(c) then
+                    local tp, md = nil, math.huge
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
+                            local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                            if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
+                        end
+                    end
+                    if tp and md <= 20 then
+                        local cam = workspace.CurrentCamera
+                        local targetCF = CFrame.new(cam.CFrame.Position, Vector3.new(tp.X, hrp.Position.Y, tp.Z))
+                        cam.CFrame = cam.CFrame:Lerp(targetCF, 0.04)
+                    end
+                end
+
+                -- مهارة هولد (مع قائمة "ابو الزين" للدوران الدائري وإعطاء القنبلة للخصم)
+                if holdSkillEnabled and HB(c) then
+                    local tp, md, cE = nil, math.huge, nil
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
+                            local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                            if d < md then md, tp, cE = d, p.Character.HumanoidRootPart.Position, p.Character.HumanoidRootPart end
+                        end
+                    end
+                    if tp and cE then
+                        if subSpinActive then
+                            -- الدوران السلس والالتفاف نحو الخصم
+                            local lookAtPos = Vector3.new(tp.X, hrp.Position.Y, tp.Z)
+                            hrp.CFrame = hrp.CFrame:Lerp(CFrame.new(hrp.Position, lookAtPos), 0.15)
+                        end
+
+                        local dist = (hrp.Position - tp).Magnitude
+                        if subSpinActive then
+                            -- حركة دائرية ذكية للالتفاف حول الخصم وإعطائه القنبلة بدقة
+                            local angle = tick() * 4.0
+                            local circleOffset = Vector3.new(math.cos(angle) * 3.5, 0, math.sin(angle) * 3.5)
+                            hum:MoveTo(tp + circleOffset)
+                        else
+                            if dist > 3 then
+                                hum:MoveTo(tp)
+                            end
+                        end
+                    end
+                end
+
+                if autoDirectEnabled and HB(c) then
+                    local tp, md = nil, math.huge
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
+                            local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                            if d < md then md, tp = d, p.Character.HumanoidRootPart.Position end
+                        end
+                    end
+                    if tp and (hrp.Position - tp).Magnitude > 1.2 then hum:MoveTo(tp) end
+                end
+
+                if au then
+                    if hrp.Position.X < 20 then T.Text = "" return end
+                    if not internalRun then T.Text, T.TextColor3 = "جاهز (متوقف)", Color3.fromRGB(200, 200, 200) return end
+                    if hum.MoveDirection.Magnitude > 0.1 then T.Text, T.TextColor3 = "التحكم صار لك", Color3.fromRGB(255, 70, 70) return end
+                    if not HB(c) then T.Text, T.TextColor3 = "مو معاك قنبله", Color3.fromRGB(255, 220, 50) return end
+
+                    T.Text, T.TextColor3 = "السكربت يشتغل", Color3.fromRGB(0, 255, 140)
+                    local tp, md, cE = nil, math.huge, nil
+                    for _, p in pairs(Plrs:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") and isValidEnemy(p.Character.HumanoidRootPart, p) then
+                            local d = (hrp.Position - p.Character.HumanoidRootPart.Position).Magnitude
+                            if d < md then md, tp, cE = d, p.Character.HumanoidRootPart.Position, p.Character.HumanoidRootPart end
+                        end
+                    end
+
+                    if tp and cE then
+                        local eHum = cE.Parent:FindFirstChildOfClass("Humanoid")
+                        task.wait(math.random(35, 55) / 100)
+                        local pred = tp + (eHum and eHum.MoveDirection * 0.7 or Vector3.zero) + Vector3.new(math.random(-6,6),0,math.random(-6,6))*0.1
+                        if (hrp.Position - pred).Magnitude <= 3.5 then
+                            local tVal = tick() * 2.0
+                            hum:MoveTo(pred + Vector3.new(math.cos(tVal)*1.3, 0, math.sin(tVal)*1.3))
+                        elseif (hrp.Position - pred).Magnitude > 1.2 then
+                            hum:MoveTo(pred)
+                        end
+                    end
+                end
+            end)
+        end)
+
+        RS.Heartbeat:Connect(function()
+            local hue = (tick() % 3) / 3
+            local rainbowCol = Color3.fromHSV(hue, 1, 1)
+            devNameLabel.TextColor3 = rainbowCol
+            infoDevName.TextColor3 = rainbowCol
+        end)
+    end)
 end)
