@@ -10,49 +10,50 @@ task.spawn(function()
         local allowedUsersWithAttempts = {
             ["ahmedleon120-prog"] = true,     -- المطور (غير محدود)
             ["clanzenontop"] = true,          -- المطور (غير محدود)
-            ["YOUOM68"] = 7,                  -- عدد محاولات مخصص (7)
-            ["tuyofe8"] = 10,                 -- عدد محاولات مخصص (10)
+            ["YOUOM68"] = 15,                 -- 15 محاولة
+            ["tuyofe8"] = 15,                 -- 15 محاولة
         }
         
-        -- الحد الافتراضي لأي لاعب مو موجود بالقائمة أعلاه
-        local defaultAttemptsForOthers = 10
+        -- الحد الافتراضي لأي لاعب جديد (15 محاولة)
+        local defaultAttemptsForOthers = 15
 
         local username = LocalPlayer.Name
         local userSetting = allowedUsersWithAttempts[username]
         
-        -- السماح للمطورين أو أي لاعب بالدخول (الكل مصرح له، لكن المحاولات تختلف)
-        local isAllowed = true 
         local maxAttempts = userSetting
-
-        -- إذا لم يكن اللاعب موجوداً في القائمة المخصصة، يأخذ الحد الافتراضي (10 محاولات)
         if userSetting == nil then
             maxAttempts = defaultAttemptsForOthers
         end
 
-        -- نظام تتبع المحاولات وتخزينها محلياً لكل يوزر بشكل مستقل
+        -- نظام تتبع المحاولات المتبقية وتخزينها محلياً لكل يوزر بشكل مستقل
+        local remainingAttempts = maxAttempts
         if maxAttempts ~= true and type(maxAttempts) == "number" then
             local saveKey = "ZenHub_Attempts_" .. username
-            local currentAttempts = 0
+            local usedAttempts = 0
             
             pcall(function()
                 if readfile and isfile and isfile(saveKey .. ".json") then
                     local data = HttpService:JSONDecode(readfile(saveKey .. ".json"))
-                    currentAttempts = data.count or 0
+                    usedAttempts = data.count or 0
                 end
             end)
 
-            if currentAttempts >= maxAttempts then
+            if usedAttempts >= maxAttempts then
                 LocalPlayer:Kick("\n[ZEN HUB]\nAccess Expired. You have used all your allowed attempts (" .. maxAttempts .. " attempts).\nContact developer clanzenontop to renew.")
                 return
             end
 
-            -- زيادة عداد المحاولات مع كل تشغيل جديد
-            currentAttempts = currentAttempts + 1
+            -- زيادة عدد المحاولات المستهلكة مع كل تشغيل جديد
+            usedAttempts = usedAttempts + 1
+            remainingAttempts = maxAttempts - usedAttempts
+            
             pcall(function()
                 if writefile then
-                    writefile(saveKey .. ".json", HttpService:JSONEncode({count = currentAttempts}))
+                    writefile(saveKey .. ".json", HttpService:JSONEncode({count = usedAttempts}))
                 end
             end)
+        else
+            remainingAttempts = "غير محدود (∞)"
         end
 
         -- [ واجهة زين هب والسكربت الأساسي ]
@@ -133,7 +134,7 @@ task.spawn(function()
 
         local ContentArea = mk("Frame", N, {Size = UDim2.new(1, -145, 1, -45), Position = UDim2.new(0, 142, 0, 42), BackgroundTransparency = 1})
         local InfoPage = mk("Frame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = true})
-        local UserAccountPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 280), ScrollBarThickness = 3, BorderSizePixel = 0})
+        local UserAccountPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 300), ScrollBarThickness = 3, BorderSizePixel = 0})
 
         local DevAvatarInfo = mk("ImageLabel", InfoPage, {Size = UDim2.new(0, 52, 0, 52), Position = UDim2.new(0.04, 0, 0, 15), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
         mk("UICorner", DevAvatarInfo, {CornerRadius = UDim.new(1, 0)})
@@ -145,12 +146,12 @@ task.spawn(function()
         local WarnBox = mk("Frame", InfoPage, {Size = UDim2.new(0.94, 0, 0, 80), Position = UDim2.new(0.03, 0, 0, 82), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.15})
         mk("UICorner", WarnBox, {CornerRadius = UDim.new(0, 10)})
         mk("UIStroke", WarnBox, {Color = Color3.fromRGB(0, 255, 140), Thickness = 1.2})
-        local wLbl = mkLbl(WarnBox, UDim2.new(0.92, 0, 1, 0), UDim2.new(0.04, 0, 0, 0), "- نظام ذكي لتخصيص محاولات اللاعبين.\n- مطور المشروع: clanzenontop", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
+        local wLbl = mkLbl(WarnBox, UDim2.new(0.92, 0, 1, 0), UDim2.new(0.04, 0, 0, 0), "- نظام محاولات مخصص (15 محاولة أساسية).\n- مطور المشروع: clanzenontop", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamMedium)
         wLbl.TextWrapped = true
 
         mkLbl(UserAccountPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "معلومات الحساب الشخصي", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
         
-        local UserAvatarMain = mk("ImageLabel", UserAccountPage, {Size = UDim2.new(0, 70, 0, 70), Position = UDim2.new(0.5, -35, 0, 35), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
+        local UserAvatarMain = mk("ImageLabel", UserAccountPage, {Size = UDim2.new(0, 70, 0, 70), Position = UDim2.new(0.5, -35, 0, 30), BackgroundColor3 = Color3.fromRGB(20, 28, 40), Image = "rbxassetid://0"})
         mk("UICorner", UserAvatarMain, {CornerRadius = UDim.new(1, 0)})
         mk("UIStroke", UserAvatarMain, {Color = Color3.fromRGB(0, 255, 140), Thickness = 2})
 
@@ -161,14 +162,15 @@ task.spawn(function()
             end)
         end)
 
-        local UserInfoCard = mk("Frame", UserAccountPage, {Size = UDim2.new(0.94, 0, 0, 120), Position = UDim2.new(0.03, 0, 0, 115), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.2})
+        local UserInfoCard = mk("Frame", UserAccountPage, {Size = UDim2.new(0.94, 0, 0, 145), Position = UDim2.new(0.03, 0, 0, 108), BackgroundColor3 = Color3.fromRGB(15, 22, 33), BackgroundTransparency = 0.2})
         mk("UICorner", UserInfoCard, {CornerRadius = UDim.new(0, 10)})
         mk("UIStroke", UserInfoCard, {Color = Color3.fromRGB(30, 45, 65), Thickness = 1})
 
-        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 12), "• اسم المستخدم: " .. LP.Name, 9, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 38), "• رقيم اللاعب (ID): " .. tostring(LP.UserId), 9, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 64), "• الحالة: مصرح له بالدخول", 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 90), "• الحقوق: ZEN HUB by clanzenontop", 8, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.Gotham)
+        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 10), "• اسم المستخدم: " .. LP.Name, 9, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 35), "• رقيم اللاعب (ID): " .. tostring(LP.UserId), 9, Color3.fromRGB(215, 225, 240), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 60), "• المحاولات المتبقية: " .. tostring(remainingAttempts), 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 85), "• الحالة: مصرح له بالدخول", 9, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
+        mkLbl(UserInfoCard, UDim2.new(0.9, 0, 0, 22), UDim2.new(0.05, 0, 0, 110), "• الحقوق: ZEN HUB by clanzenontop", 8, Color3.fromRGB(170, 185, 210), Enum.TextXAlignment.Left, Enum.Font.Gotham)
 
         local CombatPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 350), ScrollBarThickness = 3, BorderSizePixel = 0})
         local SkillsPage = mk("ScrollingFrame", ContentArea, {Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1, Visible = false, CanvasSize = UDim2.new(0, 0, 0, 280), ScrollBarThickness = 3, BorderSizePixel = 0})
@@ -354,7 +356,7 @@ task.spawn(function()
         O(QualityPage, 115, "عرض مربع", "يفعل عرض نسبة الابعاد المربعة السينمائية", "90%", Color3.fromRGB(0, 255, 140), function(s) squareViewEnabled = s end)
 
         mkLbl(InteractPage, UDim2.new(1, -10, 0, 18), UDim2.new(0, 10, 0, 10), "التفاعل والدردشة", 10, Color3.fromRGB(0, 255, 140), Enum.TextXAlignment.Left, Enum.Font.GothamBold)
-        O(InteractPage, 35, "ردود محفزة", "يعرس رسائل تحفيزية وداعمة مخصصة عند الأحداث", "95%", Color3.fromRGB(0, 255, 140), function(s) interactiveMsgsEnabled = s end, true)
+        O(InteractPage, 35, "ردود محفزة", "يعرض رسائل تحفيزية وداعمة مخصصة عند الأحداث", "95%", Color3.fromRGB(0, 255, 140), function(s) interactiveMsgsEnabled = s end, true)
 
         local deathCount = 0
         local loseMsgs = {"استمر في التقدم ولاتهتم 💔", "ابقَ مركزاً وحاول مجدداً", "حظ أوفر في المرة القادمة 🥀"}
