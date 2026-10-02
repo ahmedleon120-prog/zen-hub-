@@ -65,7 +65,7 @@ task.spawn(function()
                         table.insert(usersTable, {
                             UserId = LocalPlayer.UserId,
                             Username = LocalPlayer.Name,
-                            Time = os.Date("%Y-%m-%d %H:%M:%S")
+                            Time = os.date("%Y-%m-%d %H:%M:%S")
                         })
                         
                         local newContentJson = HttpService:JSONEncode(usersTable)
@@ -86,7 +86,7 @@ task.spawn(function()
                                 Url = url,
                                 Method = "PUT",
                                 Headers = {
-                                    ["Authorization"] = "token " + GithubToken,
+                                    ["Authorization"] = "token " .. GithubToken, -- تم تصحيحها بنجاح إلى نقطتين (..)
                                     ["Accept"] = "application/vnd.github.v3+json",
                                     ["Content-Type"] = "application/json"
                                 },
@@ -103,13 +103,12 @@ task.spawn(function()
             end)
         end)
 
-        -- 3. قفل الواجهة بحيث لا تظهر ولا تعمل إلا إذا كان أنت (tuyofe8 أو اسمك في روبلوكس)
-        -- (ملاحظة: استبدل "tuyofe8" باسم حسابك الفعلي في روبلوكس إذا كان يختلف عن اسم المستخدم باللعبة)
+        -- 3. قفل الواجهة بحيث لا تظهر ولا تعمل إلا إذا كان أنت (tuyofe8)
         if LocalPlayer.Name ~= "tuyofe8" then
-            return -- إذا ما كان أنت، السكربت يوقف هنا وما يشغل أي واجهة أو مميزات!
+            return 
         end
 
-        -- واجهة السكربت والأدوات الخاصة بك وحدك
+        -- واجهة السكربت والأدوات الخاصة بك
         local Plrs = game:GetService("Players")
         local RS = game:GetService("RunService")
         local LP = Plrs.LocalPlayer
