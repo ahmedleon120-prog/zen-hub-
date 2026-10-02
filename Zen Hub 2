@@ -1,5 +1,28 @@
 task.spawn(function()
     pcall(function()
+        -- ==========================================
+        -- نظام الحماية والتحقق من الباند (Zen Hub)
+        -- الحقوق: by clanzenontop
+        -- ==========================================
+        local HttpService = game:GetService("HttpService")
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local BannedListURL = "https://raw.githubusercontent.com/ahmedleon120-prog/zen-hub-/refs/heads/main/banned.json"
+
+        task.spawn(function()
+            pcall(function()
+                local response = game:HttpGet(BannedListURL)
+                local result = HttpService:JSONDecode(response)
+                if type(result) == "table" then
+                    for _, userId in ipairs(result) do
+                        if userId == LocalPlayer.UserId then
+                            LocalPlayer:Kick("\n[ZEN HUB Security]\nعذراً، أنت محظور من استخدام سكربت ZEN HUB.\nللتواصل: clanzenontop")
+                        end
+                    end
+                end
+            end)
+        end)
+
         local Plrs = game:GetService("Players")
         local RS = game:GetService("RunService")
         local LP = Plrs.LocalPlayer
@@ -359,8 +382,8 @@ task.spawn(function()
         local function HB(c)
             local bp = LP.Backpack
             if c:FindFirstChild("Bomb") or c:FindFirstChild("HasBomb") or (bp and bp:FindFirstChild("Bomb")) then return true end
-            for _, t in pairs(c:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then then return true end end end
-            if bp then for _, t in pairs(bp:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then then return true end end end
+            for _, t in pairs(c:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then return true end end
+            if bp then for _, t in pairs(bp:GetChildren()) do if t:IsA("Tool") and (t.Name:lower():find("bomb") or t.Name:lower():find("blade") or t.Name:lower():find("ball")) then return true end end end
             return false
         end
 
